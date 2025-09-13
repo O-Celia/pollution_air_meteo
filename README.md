@@ -26,7 +26,7 @@ Les objectifs principaux sont :
 
 | Domaine                                     | Source                            | Lien                                                                                                                              |
 | ------------------------------------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| Pollution atmosphérique (PM10, NO₂, O₃)     | AirParif                          | [https://data-airparif-asso.opendata.arcgis.com](https://data-airparif-asso.opendata.arcgis.com) |
+| Pollution atmosphérique (PM10, PM2.5, NO₂, O₃)     | AirParif                          |[https://data-airparif-asso.opendata.arcgis.com](https://data-airparif-asso.opendata.arcgis.com) |
 | Données météo (température, humidité, vent) | Météo Data Gouv                   | [https://meteo.data.gouv.fr/](https://meteo.data.gouv.fr/)                                                                  |
 | Données géographiques                       | IGN / OpenStreetMap               | [https://www.geoportail.gouv.fr](https://www.geoportail.gouv.fr) / [https://www.openstreetmap.org](https://www.openstreetmap.org) |
 
@@ -69,9 +69,16 @@ Les objectifs principaux sont :
 
 5. **Modélisation prédictive**
 
-   * Variables explicatives : météo (T°, humidité, vent)
+   * Variables explicatives : météo
+        - Températures (tx, tn, tm) : chaleur favorise O₃.
+        - Vent (ffm, fxy, dxy) : dispersion ou accumulation des polluants.
+        - Précipitations (rr) : nettoyage de l’atmosphère.
+        - Humidité (dhumec) : particules fines (PM).
+        - Pression (pmerm) : anticyclone = pollution piégée.
+        - UV (uv_indicex) : précurseur d’ozone.
+        - Evotranspiration (etpmon) : liée à l’ozone et particules.
    * Variable cible : concentration en polluants
-   * Modèle ML : Régression (RandomForestRegressor, XGBoost), Classification (RandomForestClassifier, Logistic Regression)
+   * Modèle ML : Régression (RandomForestRegressor, XGBoost) et classification (RandomForestClassifier, Logistic Regression)
    * Validation croisée
    * Prédiction des pics de pollution
 
