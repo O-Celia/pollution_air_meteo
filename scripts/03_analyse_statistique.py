@@ -3,6 +3,8 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
 
 # Fichiers sources
 pollution_file = "../exports/intermediaire/pollution_fusion.csv"
@@ -72,17 +74,18 @@ rename_vars = {
 
 cols_meteo = [c for c in df_meteo.columns if c.endswith("_mean")]
 
-for p in polluants:
-    df_sub = df_full[df_full["polluant"] == p]
-    for col in cols_meteo:
-        plt.figure(figsize=(8,5))
-        sns.boxplot(x=p, y=col, data=df_sub.rename(columns={"valeur_mean": p}))
-        plt.title(f"{col} vs {p}")
-        plt.xlabel(f"{p} (µg/m³)")
-        plt.ylabel(col)
-        plt.savefig(os.path.join(meteo_folder, f"boxplot_{col}_vs_{p}.png"))
-        plt.close()
-
+for col in cols_meteo:
+    plt.figure(figsize=(12,6))
+    sns.boxplot(x="dep", y=col, data=df_meteo[~df_meteo[col].isna()])
+    plt.title(f"Distribution de {rename_vars.get(col, col)} par département")
+    plt.xlabel("Département")
+    plt.ylabel(rename_vars.get(col, col))
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig(os.path.join(meteo_folder, f"boxplot_{col}_par_departement.png"))
+    plt.close()
+        
+# Outliers
 def detect_outliers_iqr(series):
     """Retourne les indices des outliers selon la règle 1.5×IQR"""
     q1 = series.quantile(0.25)
@@ -118,6 +121,61 @@ for col in cols_meteo:
     if not outliers.empty:
         print(f"  Min outlier = {outliers.min():.2f}, Max outlier = {outliers.max():.2f}")
 
+# Distribution météo selon polluant
+for p in polluants:
+    df_sub = df_full[df_full["polluant"] == p].rename(columns={"valeur_mean": p})
+
+    for col in cols_meteo:
+        plt.figure(figsize=(7,5))
+        sns.scatterplot(x=col, y=p, data=df_sub, alpha=0.5)
+        X = df_sub[[col]].dropna()
+        y = df_sub[p].loc[X.index]
+        
+        if len(X) > 10:
+            model = LinearRegression()
+            model.fit(X, y)
+            y_pred = model.predict(X)
+
+            # R² et coefficients
+            r2 = r2_score(y, y_pred)
+            slope = model.coef_[0]
+            intercept = model.intercept_
+
+            # Courbe de régression
+            x_range = np.linspace(X[col].min(), X[col].max(), 100)
+            x_range_df = pd.DataFrame(x_range, columns=[col])
+            plt.plot(x_range, model.predict(x_range_df), color="red", linewidth=2)
+
+            plt.text(0.05, 0.95,
+                     f"y = {slope:.2f}x + {intercept:.2f}\nR² = {r2:.3f}",
+                     transform=plt.gca().transAxes,
+                     fontsize=10, verticalalignment="top",
+                     bbox=dict(facecolor="white", alpha=0.6, edgecolor="gray"))
+
+        plt.title(f"{rename_vars.get(col,col)} vs {p}")
+        plt.xlabel(rename_vars.get(col,col))
+        plt.ylabel(f"{p} (µg/m³)")
+        plt.tight_layout()
+
+        plt.savefig(os.path.join(meteo_folder, f"scatter_regression_{col}_vs_{p}.png"))
+        plt.close()
+        
+print("\n=== Pente et coefficient de détermination")
+results = []
+for p in polluants:
+    df_sub = df_full[df_full["polluant"] == p]
+    for col in cols_meteo:
+        if col in df_sub.columns:
+            X = df_sub[[col]]
+            y = df_sub["valeur_mean"]
+            model = LinearRegression().fit(X, y)
+            y_pred = model.predict(X)
+            slope = model.coef_[0]
+            intercept = model.intercept_
+            r2 = r2_score(y, y_pred)
+            print(f"Polluant={p}, Variable météo={col}, pente={slope:.3f}, intercept={intercept:.2f}, R²={r2:.3f}")
+            results.append([p, col, slope, intercept, r2])
+
 # Statistiques descriptives
 print("\n=== Aperçu ===")
 print(df_full.head(10))
@@ -128,7 +186,7 @@ for p in pollutants:
     print(f"\nPolluant : {p}")
     print(df_full[df_full["polluant"] == p]["valeur_mean"].describe())
 
-print("\n=== Corrélations météo / pollution ===")
+# Pivot pour corrélation
 df_pivot = df_full.pivot_table(index=["date","dep"], 
                                columns="polluant", 
                                values="valeur_mean").reset_index()
@@ -181,5 +239,5 @@ for p in polluants:
     plt.title(f"Évolution quotidienne de {p} en Île-de-France")
     plt.ylabel(f"{p} (µg/m³)")
     plt.xlabel("Date")
-    plt.savefig(os.path.join(meteo_folder, f"evolution_{p}.png"))
+    plt.savefig(os.path.join(polluants_folder, f"evolution_{p}.png"))
     plt.close()
