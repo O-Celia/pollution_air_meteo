@@ -157,7 +157,7 @@ for p in polluants:
         plt.ylabel(f"{p} (µg/m³)")
         plt.tight_layout()
 
-        plt.savefig(os.path.join(meteo_folder, f"scatter_regression_{col}_vs_{p}.png"))
+        plt.savefig(os.path.join(correlation_folder, f"scatter_regression_{col}_vs_{p}.png"))
         plt.close()
         
 print("\n=== Pente et coefficient de détermination")
@@ -213,18 +213,28 @@ plt.tight_layout()
 plt.savefig(os.path.join(correlation_folder, "correlation_reduite_polluant_meteo.png"))
 plt.close()
 
-# Corrélation complète
+print("\n=== Corrélations réduites : Polluants / Météo ===")
+print(corr_reduite.round(3))
+
+# Retirer les colonnes contenant "mediane"
+df_corr_filtered = df_corr.drop(columns=["date","dep"])
+df_corr_filtered = df_corr_filtered[[c for c in df_corr_filtered.columns if "mediane" not in c]]
+
+# Corrélation complète sans les médianes
 plt.figure(figsize=(18, 14))
-corr_complete = df_corr.drop(columns=["date","dep"]).corr()
+corr_complete = df_corr_filtered.corr()
 sns.heatmap(corr_complete, annot=False, cmap="coolwarm")
 
-plt.title("Corrélations complètes : Polluants + Météo", fontsize=16)
+plt.title("Corrélations complètes : Polluants + Météo (sans médianes)", fontsize=16)
 plt.xticks(rotation=45, ha="right")
 plt.yticks(rotation=0)
 
 plt.tight_layout()
 plt.savefig(os.path.join(correlation_folder, "correlation_complete.png"))
 plt.close()
+
+print("\n=== Corrélations complètes (extrait, sans médianes) ===")
+print(corr_complete.round(3).head(10))
 
 # Evolution temporelle par polluant
 polluants = ["NO2", "O3", "PM10", "PM2.5"]

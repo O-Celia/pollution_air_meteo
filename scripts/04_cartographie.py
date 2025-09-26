@@ -68,3 +68,12 @@ for p in polluants:
         plt.title(f"{p} - {m}")
         plt.savefig(os.path.join(output_folder, f"{p}_{m}.png"))
         plt.close()
+
+pd.set_option("display.max_rows", None)
+pd.set_option("display.max_columns", None)
+
+print("\n=== Moyenne annuelle par département et polluant ===")
+print(df_mean)
+
+print("\n=== Moyenne mensuelle par département et polluant ===")
+print(df_monthly)
