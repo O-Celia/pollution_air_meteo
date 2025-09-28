@@ -129,7 +129,7 @@ Une fois les données nettoyées, j’ai réalisé plusieurs analyses :
    * Utilisation des deux colonnes moyenne et médiane pour vérifier la robustesse des relations.
 
 - Régressions temporelles :
-   * Ajustement de modèles linéaires simples (2020–2025) pour détecter des tendances globales par polluant.
+   * Ajustement de modèles linéaires simples (2020–2024) pour détecter des tendances globales par polluant.
    * Identification des périodes les plus polluées (top 5 mois par polluant) et du département le plus pollué en moyenne pour chaque polluant.
 
 Ces analyses servent de base pour la modélisation prédictive, en identifiant quelles variables météo expliquent le mieux la pollution.
@@ -269,7 +269,7 @@ Cette double approche permet à la fois de valider le modèle (médiane, équili
 
 ## Conclusion
 
-L’analyse menée met en évidence plusieurs points clés sur la pollution atmosphérique entre 2020 et 2025 :
+L’analyse menée met en évidence plusieurs points clés sur la pollution atmosphérique entre 2020 et 2024 :
 - **Zones et périodes les plus polluées** : 
 Parmi les départements étudiés, certains se distinguent selon le polluant dominant :
    - l’Essonne pour le dioxyde d’azote (NO₂) et les particules fines (PM2.5),
