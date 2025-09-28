@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
+import statsmodels.api as sm
 
 # Fichiers sources
 pollution_file = "../exports/intermediaire/pollution_fusion.csv"
@@ -25,21 +26,23 @@ df_pollution = df_pollution[df_pollution["nb_station_pollution"] >= 3]
 df_meteo = df_meteo[df_meteo["nb_station_meteo"] >= 3]
 
 # Fusion par date et département
-df_full = df_pollution.merge(
-    df_meteo,
-    on=["date", "dep"],
-    how="inner"
-)
+df_full = df_pollution.merge(df_meteo, on=["date", "dep"], how="inner")
 
 # Sans doublons
 df_full = df_full.drop_duplicates()
 
 # Supprimer les dates inexistantes
-df_full = df_full[(df_full['date'] >= '2020-01-01') & (df_full['date'] <= '2024-12-31')]
+df_full = df_full[(df_full["date"] >= "2020-01-01") & (df_full["date"] <= "2024-12-31")]
 
 # Sauvegarde du fichier fusionné
 if os.path.exists(output_file):
-    answer = input(f"Le fichier {output_file} existe déjà. Voulez-vous l'écraser ? (oui/non) : ").strip().lower()
+    answer = (
+        input(
+            f"Le fichier {output_file} existe déjà. Voulez-vous l'écraser ? (oui/non) : "
+        )
+        .strip()
+        .lower()
+    )
     if answer == "oui":
         df_full.to_csv(output_file, index=False)
         print(f"Fichier créé : {output_file}")
@@ -52,7 +55,7 @@ else:
 # Boxplots polluants
 polluants = df_full["polluant"].unique()
 for p in polluants:
-    plt.figure(figsize=(10,5))
+    plt.figure(figsize=(10, 5))
     sns.boxplot(data=df_full[df_full["polluant"] == p], x="dep", y="valeur_mean")
     plt.title(f"Distribution des valeurs de {p} par département")
     plt.ylabel(f"{p} (µg/m³)")
@@ -69,13 +72,13 @@ rename_vars = {
     "tm_mean": "Température moyenne (tm)",
     "ffm_mean": "Vitesse moyenne du vent (ffm)",
     "fxy_mean": "Vitesse max du vent (fxy)",
-    "dxy_mean": "Direction max du vent (dxy)"
+    "dxy_mean": "Direction max du vent (dxy)",
 }
 
 cols_meteo = [c for c in df_meteo.columns if c.endswith("_mean")]
 
 for col in cols_meteo:
-    plt.figure(figsize=(12,6))
+    plt.figure(figsize=(12, 6))
     sns.boxplot(x="dep", y=col, data=df_meteo[~df_meteo[col].isna()])
     plt.title(f"Distribution de {rename_vars.get(col, col)} par département")
     plt.xlabel("Département")
@@ -84,7 +87,8 @@ for col in cols_meteo:
     plt.tight_layout()
     plt.savefig(os.path.join(meteo_folder, f"boxplot_{col}_par_departement.png"))
     plt.close()
-        
+
+
 # Outliers
 def detect_outliers_iqr(series):
     """Retourne les indices des outliers selon la règle 1.5×IQR"""
@@ -94,6 +98,7 @@ def detect_outliers_iqr(series):
     lower = q1 - 1.5 * iqr
     upper = q3 + 1.5 * iqr
     return series[(series < lower) | (series > upper)]
+
 
 print("\n=== Détection d'outliers ===")
 
@@ -106,10 +111,16 @@ for p in df_full["polluant"].unique():
     print(f"  Outliers = {len(outliers)} ({len(outliers)/len(vals)*100:.1f}%)")
     print(f"  Min = {vals.min():.2f}, Max = {vals.max():.2f}")
     if not outliers.empty:
-        print(f"  Min outlier = {outliers.min():.2f}, Max outlier = {outliers.max():.2f}")
+        print(
+            f"  Min outlier = {outliers.min():.2f}, Max outlier = {outliers.max():.2f}"
+        )
 
 # Météo
-cols_meteo = [c for c in df_meteo.columns if c not in ["date","dep","nb_station_meteo"] and "mediane" not in c]
+cols_meteo = [
+    c
+    for c in df_meteo.columns
+    if c not in ["date", "dep", "nb_station_meteo"] and "mediane" not in c
+]
 
 for col in cols_meteo:
     vals = df_meteo[col].dropna()
@@ -119,18 +130,20 @@ for col in cols_meteo:
     print(f"  Outliers = {len(outliers)} ({len(outliers)/len(vals)*100:.1f}%)")
     print(f"  Min = {vals.min():.2f}, Max = {vals.max():.2f}")
     if not outliers.empty:
-        print(f"  Min outlier = {outliers.min():.2f}, Max outlier = {outliers.max():.2f}")
+        print(
+            f"  Min outlier = {outliers.min():.2f}, Max outlier = {outliers.max():.2f}"
+        )
 
 # Distribution météo selon polluant
 for p in polluants:
     df_sub = df_full[df_full["polluant"] == p].rename(columns={"valeur_mean": p})
 
     for col in cols_meteo:
-        plt.figure(figsize=(7,5))
+        plt.figure(figsize=(7, 5))
         sns.scatterplot(x=col, y=p, data=df_sub, alpha=0.5)
         X = df_sub[[col]].dropna()
         y = df_sub[p].loc[X.index]
-        
+
         if len(X) > 10:
             model = LinearRegression()
             model.fit(X, y)
@@ -146,21 +159,27 @@ for p in polluants:
             x_range_df = pd.DataFrame(x_range, columns=[col])
             plt.plot(x_range, model.predict(x_range_df), color="red", linewidth=2)
 
-            plt.text(0.05, 0.95,
-                     f"y = {slope:.2f}x + {intercept:.2f}\nR² = {r2:.3f}",
-                     transform=plt.gca().transAxes,
-                     fontsize=10, verticalalignment="top",
-                     bbox=dict(facecolor="white", alpha=0.6, edgecolor="gray"))
+            plt.text(
+                0.05,
+                0.95,
+                f"y = {slope:.2f}x + {intercept:.2f}\nR² = {r2:.3f}",
+                transform=plt.gca().transAxes,
+                fontsize=10,
+                verticalalignment="top",
+                bbox=dict(facecolor="white", alpha=0.6, edgecolor="gray"),
+            )
 
         plt.title(f"{rename_vars.get(col,col)} vs {p}")
-        plt.xlabel(rename_vars.get(col,col))
+        plt.xlabel(rename_vars.get(col, col))
         plt.ylabel(f"{p} (µg/m³)")
         plt.tight_layout()
 
-        plt.savefig(os.path.join(correlation_folder, f"scatter_regression_{col}_vs_{p}.png"))
+        plt.savefig(
+            os.path.join(correlation_folder, f"scatter_regression_{col}_vs_{p}.png")
+        )
         plt.close()
-        
-print("\n=== Pente et coefficient de détermination")
+
+print("\n=== Pente et coefficient de détermination ===")
 results = []
 for p in polluants:
     df_sub = df_full[df_full["polluant"] == p]
@@ -173,7 +192,9 @@ for p in polluants:
             slope = model.coef_[0]
             intercept = model.intercept_
             r2 = r2_score(y, y_pred)
-            print(f"Polluant={p}, Variable météo={col}, pente={slope:.3f}, intercept={intercept:.2f}, R²={r2:.3f}")
+            print(
+                f"Polluant={p}, Variable météo={col}, pente={slope:.3f}, intercept={intercept:.2f}, R²={r2:.3f}"
+            )
             results.append([p, col, slope, intercept, r2])
 
 # Statistiques descriptives
@@ -187,20 +208,24 @@ for p in pollutants:
     print(df_full[df_full["polluant"] == p]["valeur_mean"].describe())
 
 # Pivot pour corrélation
-df_pivot = df_full.pivot_table(index=["date","dep"], 
-                               columns="polluant", 
-                               values="valeur_mean").reset_index()
+df_pivot = df_full.pivot_table(
+    index=["date", "dep"], columns="polluant", values="valeur_mean"
+).reset_index()
 
 # Joindre avec les variables météo
-cols_meteo = [c for c in df_meteo.columns if "mean" in c and c not in ["nb_station_meteo"]]
-df_corr = df_pivot.merge(df_meteo, on=["date","dep"], how="left")
+cols_meteo = [
+    c for c in df_meteo.columns if "mean" in c and c not in ["nb_station_meteo"]
+]
+df_corr = df_pivot.merge(df_meteo, on=["date", "dep"], how="left")
 
 # Corrélation réduite
 polluants = df_full["polluant"].unique().tolist()
 vars_polluants = [p for p in polluants if p in df_corr.columns]
 vars_meteo = cols_meteo
 
-corr_reduite = df_corr[vars_polluants + vars_meteo].corr().loc[vars_polluants, vars_meteo]
+corr_reduite = (
+    df_corr[vars_polluants + vars_meteo].corr().loc[vars_polluants, vars_meteo]
+)
 
 plt.figure(figsize=(16, 10))
 sns.heatmap(corr_reduite, annot=True, fmt=".2f", cmap="coolwarm")
@@ -217,8 +242,10 @@ print("\n=== Corrélations réduites : Polluants / Météo ===")
 print(corr_reduite.round(3))
 
 # Retirer les colonnes contenant "mediane"
-df_corr_filtered = df_corr.drop(columns=["date","dep"])
-df_corr_filtered = df_corr_filtered[[c for c in df_corr_filtered.columns if "mediane" not in c]]
+df_corr_filtered = df_corr.drop(columns=["date", "dep"])
+df_corr_filtered = df_corr_filtered[
+    [c for c in df_corr_filtered.columns if "mediane" not in c]
+]
 
 # Corrélation complète sans les médianes
 plt.figure(figsize=(18, 14))
@@ -251,3 +278,54 @@ for p in polluants:
     plt.xlabel("Date")
     plt.savefig(os.path.join(polluants_folder, f"evolution_{p}.png"))
     plt.close()
+
+# Regression linéaire par polluant
+
+results_trend = []
+
+for p in polluants:
+    df_sub = (
+        df_full[df_full["polluant"] == p]
+        .groupby("date")["valeur_mean"]
+        .mean()
+        .reset_index()
+    )
+    df_sub["date"] = pd.to_datetime(df_sub["date"])
+    df_sub["t"] = (df_sub["date"] - df_sub["date"].min()).dt.days
+
+    X = sm.add_constant(df_sub["t"])
+    y = df_sub["valeur_mean"]
+    model = sm.OLS(y, X).fit()
+
+    slope = model.params["t"]
+    pval = model.pvalues["t"]
+    r2 = model.rsquared
+
+    results_trend.append([p, slope, pval, r2])
+
+df_results_trend = pd.DataFrame(
+    results_trend, columns=["Polluant", "Pente", "p-value", "R²"]
+)
+print(df_results_trend)
+
+# Moyenne mensuelle par polluant
+df_full["date"] = pd.to_datetime(df_full["date"], errors="coerce")
+df_full["month"] = df_full["date"].dt.to_period("M")
+df_monthly = df_full.groupby(["polluant", "month"])["valeur_mean"].mean().reset_index()
+# Top 5 mois les plus pollués pour chaque polluant
+top_months = (
+    df_monthly.groupby("polluant")
+    .apply(lambda x: x.nlargest(5, "valeur_mean"))
+    .reset_index(drop=True)
+)
+
+print(top_months)
+
+# Moyenne par département et par polluant
+df_dept = df_full.groupby(["polluant", "dep"])["valeur_mean"].mean().reset_index()
+# Département le plus pollué pour chaque polluant
+top_dept = df_dept.loc[df_dept.groupby("polluant")["valeur_mean"].idxmax()].reset_index(
+    drop=True
+)
+
+print(top_dept)

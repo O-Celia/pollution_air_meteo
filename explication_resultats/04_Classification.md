@@ -1,7 +1,7 @@
 # Classification pollution-météo
 
 ## Objectif
-Prédire si la concentration de différents polluants atmosphériques (NO₂, O₃, PM₁₀, PM₂.₅) est au-dessus ou en-dessous de la médiane à partir de variables météorologiques.
+Tester les modèles de classification servant à prédire si la concentration de différents polluants atmosphériques (NO₂, O₃, PM₁₀, PM₂.₅) est au-dessus ou en-dessous de la médiane à partir de variables météorologiques.
 
 ## Méthodologie
 - Préparation des données
@@ -33,7 +33,12 @@ Prédire si la concentration de différents polluants atmosphériques (NO₂, O�
 | PM₂.₅    | XGBoost             | 0.93     | 0.93      | 0.93   | 0.93     |
 
 ## Interprétation
-- Les modèles non-linéaires (RandomForest, XGBoost) surpassent largement la Régression Logistique.
 - O₃ est le polluant le plus prédictible à partir des conditions météorologiques.
 - Les particules (PM₁₀, PM₂.₅) sont plus difficiles à modéliser linéairement mais donnent de bons résultats avec des algorithmes avancés.
 - Globalement, la météo joue un rôle déterminant dans les concentrations de polluants, bien que l’importance varie selon le polluant.
+
+## Conclusion
+- Les modèles non-linéaires (RandomForest, XGBoost) surpassent largement la Régression Logistique.
+- RandomForest obtient les meilleures performances ou des performances très proches de XGBoost, tout en étant plus simple à paramétrer et moins coûteux en calcul.
+
+Pour la suite des analyses prédictives, je vais continuer avec RandomForest Regressor et RandomForest Classifier.

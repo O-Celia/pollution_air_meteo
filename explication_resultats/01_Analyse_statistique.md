@@ -87,12 +87,76 @@ Les graphiques sont disponibles dans **images/correlation**.
 **Méthodes utilisées :**
 - Calcul des moyennes quotidiennes par polluant.
 - Séries temporelles sur toute la période étudiée.
+- Régressions linéaires simples sur la période complète (2020–2025) pour identifier des tendances de fond.
+- Identification des périodes les plus polluées via moyennes mensuelles.
+- Identification du département le plus pollué via moyennes totales.
 Les graphiques sont disponibles dans **images/polluants**.
 
 **Résultats :**
 - O3 = forte saisonnalité, pics estivaux (chaleur/soleil).
 - NO2 = valeurs plus stables, tendance urbaine (trafic).
 - PM10/PM2.5 = pics ponctuels liés à épisodes particuliers.
+
+### Tendances linéaires globales (2020–2025)
+
+| Polluant | Pente | p-value | R² | Interprétation |
+|----------|-------|---------|----|----------------|
+| NO2   | -0.00266 | 2.5e-15 | 0.034 | Tendance significative à la baisse, mais faible variance expliquée |
+| O3    | -0.00282 | 4.3e-04 | 0.007 | Légère baisse significative, mais tendance très faible |
+| PM10  | -0.00266 | 4.2e-17 | 0.038 | Tendance significative à la baisse, faible variance expliquée |
+| PM2.5 | -0.00033 | 0.179   | 0.001 | Pas de tendance significative détectée |
+
+**Interprétation générale :**
+- Tous les polluants sauf PM2.5 présentent une pente négative significative, indiquant une baisse moyenne au cours de la période 2020–2025.
+- Toutefois, les R² très faibles (<0.05) montrent que la régression linéaire explique très peu la variabilité observée : les tendances existent, mais elles sont faibles et noyées dans la variabilité saisonnière et événementielle.
+- PM2.5 ne présente pas de tendance claire, suggérant une stabilité relative ou des fluctuations plus complexes.
+
+### Périodes les plus polluées (Top 5 mois par polluant)
+
+| Polluant | Mois | Valeur moyenne (µg/m³) |
+|----------|------|-------------------------|
+| NO2   | 2022-03 | 29.8 |
+| NO2   | 2021-11 | 27.3 |
+| NO2   | 2022-01 | 26.8 |
+| NO2   | 2020-01 | 26.6 |
+| NO2   | 2021-03 | 26.2 |
+| O3    | 2023-06 | 82.3 |
+| O3    | 2020-04 | 75.7 |
+| O3    | 2022-08 | 73.9 |
+| O3    | 2020-05 | 73.4 |
+| O3    | 2022-07 | 72.8 |
+| PM10  | 2022-03 | 29.1 |
+| PM10  | 2023-02 | 22.8 |
+| PM10  | 2021-03 | 22.0 |
+| PM10  | 2021-04 | 21.5 |
+| PM10  | 2021-02 | 20.6 |
+| PM2.5 | 2022-03 | 20.1 |
+| PM2.5 | 2023-02 | 17.7 |
+| PM2.5 | 2022-01 | 15.3 |
+| PM2.5 | 2022-12 | 15.2 |
+| PM2.5 | 2024-01 | 13.3 |
+
+**Interprétation :**
+- NO2 atteint ses maximums en hiver et au début du printemps, période où le chauffage et le trafic jouent un rôle important.
+- O3 connaît ses pics en été (fort ensoleillement et températures élevées favorisant la photochimie).
+- PM10 et PM2.5 montrent des pics en hiver et au début du printemps, probablement liés au chauffage résidentiel et aux conditions atmosphériques stables (stagnation de l’air).
+- Mars 2022 apparaît comme un mois particulièrement critique pour NO2, PM10 et PM2.5.
+
+### Zones les plus polluées par département
+
+**Résultats :**
+
+| Polluant | Département | Moyenne (µg/m³) |
+|----------|-------------|-----------------|
+| NO₂      | 91 (Essonne)        | 26.6 |
+| O₃       | 95 (Val-d’Oise)     | 58.0 |
+| PM10     | 77 (Seine-et-Marne) | 18.6 |
+| PM2.5    | 91 (Essonne)        | 9.2  |
+
+**Interprétation :**
+- Le NO₂ et le PM2.5 sont particulièrement élevés dans l’Essonne (91), probablement en lien avec le trafic routier et zones périurbaines.
+- L’ozone (O₃) atteint ses moyennes les plus fortes dans le Val-d’Oise (95), cohérent avec des zones périurbaines exposées à la photochimie.
+- Les PM10 sont maximaux en Seine-et-Marne (77), ce qui peut être lié à des sources locales (chauffage, agriculture, chantiers).
 
 ---
 

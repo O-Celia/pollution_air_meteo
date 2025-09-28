@@ -17,7 +17,7 @@ df["date"] = pd.to_datetime(df["date"])
 # Charger les polygones des départements/communes
 gdf_dep = gpd.read_file(shapefile)
 
-# S'assurer que le code département est au même format
+# Vérifier que le code département est au même format
 gdf_dep["dep"] = gdf_dep["code_dept"].astype(str)
 df["dep"] = df["dep"].astype(str)
 
@@ -32,39 +32,72 @@ polluants = df["polluant"].unique()
 
 for p in polluants:
     gdf_p = gdf_merge[gdf_merge["polluant"] == p]
-    
+
     fig, ax = plt.subplots(1, 1, figsize=(8, 8))
     gdf_dep.boundary.plot(ax=ax, color="black", linewidth=0.5)
-    gdf_p.plot(column="valeur_mean",
-               cmap="OrRd",
-               legend=True,
-               ax=ax,
-               legend_kwds={"label": f"{p} (µg/m³)", "shrink": 0.6})
+    gdf_p.plot(
+        column="valeur_mean",
+        cmap="OrRd",
+        legend=True,
+        ax=ax,
+        legend_kwds={"label": f"{p} (µg/m³)", "shrink": 0.6},
+    )
+
+    for idx, row in gdf_dep.iterrows():
+        if row["geometry"].centroid.is_empty:
+            continue
+        x, y = row["geometry"].centroid.coords[0]
+        ax.annotate(
+            text=row["dep"],
+            xy=(x, y),
+            ha="center",
+            va="center",
+            fontsize=6,
+            color="black",
+        )
+
     plt.title(f"Moyenne annuelle de {p} par département")
     plt.savefig(os.path.join(output_folder, f"choropleth_{p}.png"))
     plt.close()
 
 # Évolution spatio-temporelle
 df["month"] = df["date"].dt.to_period("M").astype(str)
-df_monthly = df.groupby(["dep", "polluant", "month"])["valeur_mean"].mean().reset_index()
+df_monthly = (
+    df.groupby(["dep", "polluant", "month"])["valeur_mean"].mean().reset_index()
+)
 
 for p in polluants:
     for m in df_monthly["month"].unique():
         gdf_pm = gdf_dep.merge(
             df_monthly[(df_monthly["polluant"] == p) & (df_monthly["month"] == m)],
             on="dep",
-            how="left"
+            how="left",
         )
-        
+
         fig, ax = plt.subplots(1, 1, figsize=(8, 8))
         gdf_dep.boundary.plot(ax=ax, color="black", linewidth=0.5)
-        gdf_pm.plot(column="valeur_mean",
-                    cmap="OrRd",
-                    legend=True,
-                    ax=ax,
-                    vmin=df_monthly["valeur_mean"].min(),
-                    vmax=df_monthly["valeur_mean"].max(),
-                    legend_kwds={"label": f"{p} (µg/m³)", "shrink": 0.6})
+        gdf_pm.plot(
+            column="valeur_mean",
+            cmap="OrRd",
+            legend=True,
+            ax=ax,
+            vmin=df_monthly["valeur_mean"].min(),
+            vmax=df_monthly["valeur_mean"].max(),
+            legend_kwds={"label": f"{p} (µg/m³)", "shrink": 0.6},
+        )
+
+    for idx, row in gdf_dep.iterrows():
+        if row["geometry"].centroid.is_empty:
+            continue
+        x, y = row["geometry"].centroid.coords[0]
+        ax.annotate(
+            text=row["dep"],
+            xy=(x, y),
+            ha="center",
+            va="center",
+            fontsize=6,
+            color="black",
+        )
         plt.title(f"{p} - {m}")
         plt.savefig(os.path.join(output_folder, f"{p}_{m}.png"))
         plt.close()
