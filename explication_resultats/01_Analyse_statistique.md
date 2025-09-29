@@ -43,7 +43,7 @@ Polluants
 
 Météo :
 - Pluie (rr_mean) = distribution très asymétrique (13% d’outliers), mais la pluie est très asymétrique : la plupart du temps 0, mais parfois des averses intenses.
-- Températures(tn, tx, tm) = distributions régulières, pratiquement pas d'outliers.
+- Températures (tn, tx, tm) = distributions régulières, pratiquement pas d'outliers.
 - Vent (ffm_mean et fxy_mean) = valeurs extrêmes ponctuelles, avec 2/3% d'outliers : quelques épisodes de vent fort, mais globalement régulier.
 - Evapotranspiration (etpgrille) = très peu d’outliers, valeurs élevées liées aux journées chaudes et ensoleillées.
 

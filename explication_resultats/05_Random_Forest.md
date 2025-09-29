@@ -68,12 +68,12 @@ Le modèle de classification présente une excellente précision, particulièrem
 
 ### Classification (OMS)
 
-- Objectif : détecter si une concentration dépasse ou non le seuil fixé par l’OMS (2021).  
-- Seuils utilisés :  
-  - NO₂ : 10 µg/m³  
-  - O₃ : 60 µg/m³ (pic saisonnier, indicatif)  
-  - PM10 : 15 µg/m³  
-  - PM2.5 : 5 µg/m³  
+- Objectif : détecter si une concentration dépasse ou non le seuil fixé par l’OMS (2021).
+- Seuils utilisés :
+  - NO₂ : 10 µg/m³
+  - O₃ : 60 µg/m³ (pic saisonnier, indicatif)
+  - PM10 : 15 µg/m³
+  - PM2.5 : 5 µg/m³
 
 - Modèle : RandomForestClassifier (200 arbres, `random_state=42`).
 - Evaluation : accuracy et F1-score, plus matrices de confusion.

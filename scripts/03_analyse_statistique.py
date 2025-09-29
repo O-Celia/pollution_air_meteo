@@ -227,6 +227,10 @@ corr_reduite = (
     df_corr[vars_polluants + vars_meteo].corr().loc[vars_polluants, vars_meteo]
 )
 
+corr_reduite.to_csv(
+    "../exports/final/correlation_polluant_meteo.csv", index_label="Polluant"
+)
+
 plt.figure(figsize=(16, 10))
 sns.heatmap(corr_reduite, annot=True, fmt=".2f", cmap="coolwarm")
 
@@ -240,6 +244,34 @@ plt.close()
 
 print("\n=== Corrélations réduites : Polluants / Météo ===")
 print(corr_reduite.round(3))
+
+# Tableau de corrélation pour PowerBI
+rename_map = {
+    "etpgrille_mean": "Evapotranspiration",
+    "ffm_mean": "Vent",
+    "rr_mean": "Précipitations",
+    "tx_mean": "Température",
+}
+
+# retrait des colonnes indésirables
+vars_meteo_filtre = [c for c in vars_meteo if c in rename_map.keys()]
+
+# Calcul de la corrélation réduite avec seulement ces variables
+corr_reduite_bis = (
+    df_corr[vars_polluants + vars_meteo_filtre]
+    .corr()
+    .loc[vars_polluants, vars_meteo_filtre]
+)
+
+corr_reduite_bis = corr_reduite_bis.rename(columns=rename_map)
+corr_long = (
+    corr_reduite_bis.reset_index()
+    .rename(columns={"index": "Polluant"})
+    .melt(id_vars="Polluant", var_name="Variable_Meteo", value_name="Correlation")
+)
+
+# Export
+corr_long.to_csv("../exports/final/corr_polluant_meteo_long.csv", index=False)
 
 # Retirer les colonnes contenant "mediane"
 df_corr_filtered = df_corr.drop(columns=["date", "dep"])
