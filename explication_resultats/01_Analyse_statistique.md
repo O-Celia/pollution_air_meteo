@@ -70,7 +70,8 @@ Les graphiques sont disponibles dans **images/correlation**.
 **Méthodes utilisées :**
 - Corrélations réduites entre polluants et météo (heatmap).
 - Corrélations complètes entre toutes les variables (polluants + météo).
-Les graphiques sont disponibles dans **images/correlation**.
+- Extraction des résultats des corrélations en csv (un fichier complet, un fichier transformé pour PowerBI)
+Les graphiques sont disponibles dans **images/correlation**. Les fichiers dans **exports/final**
 
 **Résultats principaux :**
 - NO2 : corrélations négatives avec T et vent (-0.3 à -0.4).

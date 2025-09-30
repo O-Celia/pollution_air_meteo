@@ -262,10 +262,24 @@ Cette double approche permet à la fois de valider le modèle (médiane, équili
 
 ### 8. **Dashboard Power BI**
 
-   * Visualisation interactive par polluant, année, lieu
-   * Évolution temporelle
-   * Comparaison météo / pollution
-   * Zones à risque prédictives
+### 8. **Dashboard Power BI**
+
+Un dashboard interactif a été conçu sous Power BI afin de synthétiser les analyses et les résultats de modélisation.
+
+- **Préparation des données** :
+   * Transformation des formats numériques et dates.  
+   * Création de colonnes et mesures DAX : `Seuil_OMS`, `Dépassement`, `% de dépassement`, `AirQualitéScore`, `Nb_Années_Dépassement`.  
+   * Table paramètre pour sélectionner dynamiquement les variables météo dans les scatterplots.  
+   * Import des fichiers de corrélations, prédictions et résultats des modèles.  
+
+- **Contenus principaux** :
+   * KPI : concentrations annuelles, % de dépassements, scores de qualité de l’air.  
+   * Cartes départementales et heatmaps spatio-temporelles.  
+   * Scatterplots interactifs pollution vs météo.  
+   * Heatmap de corrélations pollution–météo.  
+   * Comparaison valeurs réelles vs prédites, avec KPI de performance (R², RMSE, Accuracy, F1-score).  
+
+Ce dashboard permet d’explorer la pollution en Île-de-France sous plusieurs angles : évolution temporelle, disparités géographiques, corrélations météorologiques et performance des modèles prédictifs.
 
 ## Conclusion
 
