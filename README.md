@@ -238,8 +238,6 @@ J’ai choisi d'utiliser un Random Forest à la fois pour la régression (prédi
    * Les concentrations réelles et prédites sont sauvegardées.
    * Calcul des moyennes globales par polluant et des moyennes par département pour comparer les tendances spatiales.
 
----
-
 #### b. Classification : détection des zones à risque
 Deux approches ont été mises en œuvre :
 
@@ -259,8 +257,6 @@ Deux approches ont été mises en œuvre :
    - Méthodologie, évaluation et résultats identiques.
 
 Cette double approche permet à la fois de valider le modèle (médiane, équilibre statistique) et de tirer des conclusions environnementales et sanitaires (OMS). 
-
-### 8. **Dashboard Power BI**
 
 ### 8. **Dashboard Power BI**
 
@@ -305,5 +301,6 @@ En résumé, la pollution de l’air reste un enjeu majeur :
 - **NO₂** et **PM2.5** constituent les principaux risques chroniques,
 - **O₃** représente un danger lors d’épisodes estivaux,
 - **PM10** demande une vigilance particulière en période hivernale et printanière.
+
 
 Ces résultats soulignent l’importance de la surveillance locale, de l’intégration des données d’émissions, et de la prise en compte des conditions météorologiques pour anticiper et gérer les épisodes de pollution.
